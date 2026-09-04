@@ -1,4 +1,4 @@
-page 90101 "CuentasxCobrar"
+page 91300 "CuentasxCobrar"
 {
     Caption = 'Cuentas por Cobrar';
     PageType = CardPart;

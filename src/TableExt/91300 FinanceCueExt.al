@@ -1,8 +1,8 @@
-tableextension 90101 "Finance Cue Ext" extends "Finance Cue"
+tableextension 91300 "Finance Cue Ext" extends "Finance Cue"
 {
     fields
     {
-        field(90101; "Saldo Total Pendiente"; Decimal)
+        field(91300; "Saldo Total Pendiente"; Decimal)
         {
             AutoFormatExpression = '';
             AutoFormatType = 1;

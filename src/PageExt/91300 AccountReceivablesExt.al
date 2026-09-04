@@ -1,4 +1,4 @@
-pageextension 90101 "Account Receivables Ext" extends "Account Receivables"
+pageextension 91300 "Account Receivables Ext" extends "Account Receivables"
 {
     layout
     {
