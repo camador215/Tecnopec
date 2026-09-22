@@ -106,23 +106,23 @@ page 91300 "Receivables Cue"
     var
         Input: Dictionary of [Text, Text];
     begin
-        if not Rec.Get('DEFAULT') then begin
+        if not Rec.Get() then begin
             Rec.Init();
-            Rec."Primary Key" := 'DEFAULT';
             Rec.Insert();
+            Commit();
         end;
         SetDateFilters();
-        CurrPage.EnqueueBackgroundTask(
-            TaskIdCalculateCue,
-            Codeunit::"Receivables & Payables Cue Mgt",
-            Input,
-            2000);
+        CalculateCueFieldValues();
     end;
 
     var
         ChartMgt: Codeunit "Business Chart";
-        CueMgt: Codeunit "Receivables & Payables Cue Mgt";
+        ReceivablesMgt: Codeunit "Receivables Mgt";
         TaskIdCalculateCue: Integer;
+        PBTList: Dictionary of [Integer, Text];
+        PBTTelemetryMsgTxt: Label 'PBT errored with code %1 and text %2. The call stack is as follows %3.', Locked = true;
+        RecordForUpdateCachedCueValuesIsLocked: Boolean;
+        CachedCueValuesCalculationStartDateTime: DateTime;
 
     local procedure SetDateFilters()
     var
@@ -191,5 +191,89 @@ page 91300 "Receivables Cue"
         end;
         CustLedgerEntry.SetFilter("Remaining Amt. (LCY)", '>0');
         Page.Run(Page::"Customer Ledger Entries", CustLedgerEntry);
+    end;
+
+    local procedure SchedulePBT(FieldName: Text; FieldCaption: Text)
+    var
+        Input: Dictionary of [Text, Text];
+        TimeoutinMs: Integer;
+    begin
+        TimeoutinMs := 2000; // Default timeout;
+        Clear(Input);
+        Input.Add(FieldName, '');
+        CurrPage.EnqueueBackgroundTask(TaskIdCalculateCue, Codeunit::"Receivables Dictionary", Input, TimeoutInMs);
+        if TaskIdCalculateCue <> 0 then
+            PBTList.Add(TaskIdCalculateCue, FieldCaption);
+    end;
+
+    trigger OnPageBackgroundTaskCompleted(TaskId: Integer; Results: Dictionary of [Text, Text])
+    var
+        ReceivablesDictionary: Codeunit "Receivables Dictionary";
+    begin
+        // As PBT runs synchronously when running in test, the task is called even before PBTList is updated.
+        // So, we use (TaskIdCalculateCue = TaskId) to check if the task is the one we are interested in.
+        if PBTList.ContainsKey(TaskId) then begin
+            if not RecordForUpdateCachedCueValuesIsLocked then begin
+                Rec.LockTable(true);
+                Rec.Get();
+                RecordForUpdateCachedCueValuesIsLocked := true;
+            end;
+            ReceivablesDictionary.FillReceivablesCue(Results, Rec);
+            if PBTList.ContainsKey(TaskId) then begin
+                PBTList.Remove(TaskId);
+                if PBTList.Count() = 0 then begin
+                    RecordForUpdateCachedCueValuesIsLocked := false;
+                    if CachedCueValuesCalculationStartDateTime <> 0DT then
+                        Rec."Last Date/Time Modified" := CachedCueValuesCalculationStartDateTime;
+                    Rec.Modify(true);
+                    Commit();
+                end;
+            end;
+            exit;
+        end;
+
+        // If task is finished before PBTList is updated.
+        if TaskIdCalculateCue = TaskId then begin
+            Rec.LockTable(true);
+            Rec.Get();
+            ReceivablesDictionary.FillReceivablesCue(Results, Rec);
+            // Set new date/time if this is the last PBT task.
+            if Results.ContainsKey(Rec.FieldName("Payments Received")) then
+                Rec."Last Date/Time Modified" := CachedCueValuesCalculationStartDateTime;
+            Rec.Modify(true);
+            Commit();
+            TaskIdCalculateCue := 0;
+        end;
+    end;
+
+    procedure CalculateCueFieldValues()
+    begin
+        ClearExistingPageBackgroundTasks();
+        CalculateCachedCueFieldValues();
+    end;
+
+    local procedure ClearExistingPageBackgroundTasks()
+    var
+        TaskId: Integer;
+    begin
+        if PBTList.Count() > 0 then
+            foreach TaskId in PBTList.Keys() do begin
+                CurrPage.CancelBackgroundTask(TaskId);
+                PBTList.Remove(TaskId);
+            end;
+    end;
+
+    local procedure CalculateCachedCueFieldValues()
+    begin
+        CachedCueValuesCalculationStartDateTime := CurrentDateTime();
+        if not ReceivablesMgt.IsCachedCueDataExpired(Rec, CachedCueValuesCalculationStartDateTime) then begin
+            Clear(CachedCueValuesCalculationStartDateTime);
+            exit;
+        end;
+
+        SchedulePBT(Rec.FieldName("Total Outstanding"), Rec.FieldCaption("Total Outstanding"));
+        SchedulePBT(Rec.FieldName("Overdue Amount"), Rec.FieldCaption("Overdue Amount"));
+        SchedulePBT(Rec.FieldName("Not Due Amount"), Rec.FieldCaption("Not Due Amount"));
+        SchedulePBT(Rec.FieldName("Payments Received"), Rec.FieldCaption("Payments Received"));
     end;
 }

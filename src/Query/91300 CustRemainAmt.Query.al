@@ -1,24 +1,21 @@
 query 91300 "Cust. Remain. Amt."
 {
-    QueryType = Normal;
+    Caption = 'Cust. Ledg. Entry Remain. Amt.';
+    DataAccessIntent = ReadOnly;
 
     elements
     {
         dataitem(CustLedgerEntry; "Cust. Ledger Entry")
         {
-            column(Document_Type; "Document Type")
+            filter(Document_Type; "Document Type")
             {
             }
 
-            column(IsOpen; Open)
+            filter(IsOpen; Open)
             {
             }
 
-            column(Due_Date; "Due Date")
-            {
-            }
-
-            column(Posting_Date; "Posting Date")
+            filter(Due_Date; "Due Date")
             {
             }
 

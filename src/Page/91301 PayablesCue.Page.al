@@ -110,12 +110,12 @@ page 91301 "Payables Cue"
             Rec.Insert();
         end;
         SetDateFilters();
-        CueMgt.CalculatePayables(Rec, Rec."Work Date Filter", Rec."Month Start Filter", Rec."Month End Filter");
+        // CueMgt.CalculatePayables(Rec, Rec."Work Date Filter", Rec."Month Start Filter", Rec."Month End Filter");
     end;
 
     var
         ChartMgt: Codeunit "Business Chart";
-        CueMgt: Codeunit "Receivables & Payables Cue Mgt";
+        CueMgt: Codeunit "Receivables Mgt";
 
     local procedure SetDateFilters()
     var

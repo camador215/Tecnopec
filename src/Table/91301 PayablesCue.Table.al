@@ -87,6 +87,10 @@ table 91301 "Payables Cue"
                 ));
             FieldClass = FlowField;
         }
+        field(33; "Last Date/Time Modified"; DateTime)
+        {
+            Caption = 'Last Date/Time Modified';
+        }
     }
 
     keys
@@ -96,4 +100,17 @@ table 91301 "Payables Cue"
             Clustered = true;
         }
     }
+
+    local procedure GetAmountFormat(): Text
+    var
+        TypeHelper: Codeunit "Type Helper";
+        AmountFormat: Text;
+    begin
+        AmountFormat := TypeHelper.GetAmountFormatLCYWithUserLocale().Trim();
+
+        if AmountFormat = '<Precision,0:0><Standard Format,0>' then
+            exit('$' + '<Precision,0:0><Standard Format,0>');
+
+        exit(AmountFormat);
+    end;
 }

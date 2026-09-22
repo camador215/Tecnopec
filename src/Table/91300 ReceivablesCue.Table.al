@@ -42,18 +42,30 @@ table 91300 "Receivables Cue"
         field(20; "Total Outstanding"; Decimal)
         {
             Caption = 'Saldo total pendiente';
+            AutoFormatExpression = GetAmountFormat();
+            DecimalPlaces = 0 : 0;
+            AutoFormatType = 11;
         }
         field(21; "Overdue Amount"; Decimal)
         {
             Caption = 'Monto vencido';
+            AutoFormatExpression = GetAmountFormat();
+            DecimalPlaces = 0 : 0;
+            AutoFormatType = 11;
         }
         field(22; "Not Due Amount"; Decimal)
         {
             Caption = 'Monto no vencido';
+            AutoFormatExpression = GetAmountFormat();
+            DecimalPlaces = 0 : 0;
+            AutoFormatType = 11;
         }
         field(23; "Payments Received"; Decimal)
         {
             Caption = 'Pagos recibidos';
+            AutoFormatExpression = GetAmountFormat();
+            DecimalPlaces = 0 : 0;
+            AutoFormatType = 11;
         }
         field(30; "Outstanding Invoice Count"; Integer)
         {
@@ -87,6 +99,10 @@ table 91300 "Receivables Cue"
                 ));
             FieldClass = FlowField;
         }
+        field(33; "Last Date/Time Modified"; DateTime)
+        {
+            Caption = 'Last Date/Time Modified';
+        }
     }
 
     keys
@@ -96,4 +112,17 @@ table 91300 "Receivables Cue"
             Clustered = true;
         }
     }
+
+    local procedure GetAmountFormat(): Text
+    var
+        TypeHelper: Codeunit "Type Helper";
+        AmountFormat: Text;
+    begin
+        AmountFormat := TypeHelper.GetAmountFormatLCYWithUserLocale().Trim();
+
+        if AmountFormat = '<Precision,0:0><Standard Format,0>' then
+            exit('$' + '<Precision,0:0><Standard Format,0>');
+
+        exit(AmountFormat);
+    end;
 }

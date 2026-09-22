@@ -2,7 +2,7 @@ pageextension 91300 "Business Manager RC Ext" extends "Business Manager Role Cen
 {
     layout
     {
-        addlast(rolecenter)
+        addfirst(rolecenter)
         {
             part(ReceivablesCue; "Receivables Cue")
             {
