@@ -30,10 +30,9 @@ codeunit 91303 "Payables Dictionary"
                         Format(PayablesMgt.CalcNotDueAmount()));
 
                 PayablesCue.FieldName("Payments Made"):
-                    Message('ENTRÓ AL CASO PAYMENTS MADE');
-            // Results.Add(
-            //     PayablesCue.FieldName("Payments Made"),
-            //     Format(PayablesMgt.CalcPaymentsMade()));
+                    Results.Add(
+                        PayablesCue.FieldName("Payments Made"),
+                        Format(PayablesMgt.CalcPaymentsMade()));
             end;
 
         Page.SetBackgroundTaskResult(Results);
@@ -68,12 +67,12 @@ codeunit 91303 "Payables Dictionary"
                 DataList.Get(
                     PayablesCue.FieldName("Not Due Amount")));
 
-        // if DataList.ContainsKey(
-        //     PayablesCue.FieldName("Payments Made"))
-        // then
-        //     Evaluate(
-        //         PayablesCue."Payments Made",
-        //         DataList.Get(
-        //             PayablesCue.FieldName("Payments Made")));
+        if DataList.ContainsKey(
+            PayablesCue.FieldName("Payments Made"))
+        then
+            Evaluate(
+                PayablesCue."Payments Made",
+                DataList.Get(
+                    PayablesCue.FieldName("Payments Made")));
     end;
 }

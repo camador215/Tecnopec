@@ -1,7 +1,7 @@
 query 91303 "Vend. Payments Amt."
 {
     Caption = 'Vend. Payments Amt.';
-    QueryType = Normal;
+    DataAccessIntent = ReadOnly;
 
     elements
     {

@@ -282,11 +282,11 @@ page 91300 "Receivables Cue"
 
     local procedure CalculateCachedCueFieldValues()
     begin
-        CachedCueValuesCalculationStartDateTime := CurrentDateTime();
-        if not ReceivablesMgt.IsCachedCueDataExpired(Rec, CachedCueValuesCalculationStartDateTime) then begin
-            Clear(CachedCueValuesCalculationStartDateTime);
-            exit;
-        end;
+        // CachedCueValuesCalculationStartDateTime := CurrentDateTime();
+        // if not ReceivablesMgt.IsCachedCueDataExpired(Rec, CachedCueValuesCalculationStartDateTime) then begin
+        //     Clear(CachedCueValuesCalculationStartDateTime);
+        //     exit;
+        // end;
 
         SchedulePBT(Rec.FieldName("Total Outstanding"), Rec.FieldCaption("Total Outstanding"));
         SchedulePBT(Rec.FieldName("Overdue Amount"), Rec.FieldCaption("Overdue Amount"));

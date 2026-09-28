@@ -1,16 +1,17 @@
 query 91301 "Cust. Payments Amt."
 {
-    QueryType = Normal;
+    Caption = 'Cust. Payments Amt.';
+    DataAccessIntent = ReadOnly;
 
     elements
     {
         dataitem(CustLedgerEntry; "Cust. Ledger Entry")
         {
-            column(Document_Type; "Document Type")
+            filter(Document_Type; "Document Type")
             {
             }
 
-            column(Posting_Date; "Posting Date")
+            filter(Posting_Date; "Posting Date")
             {
             }
 

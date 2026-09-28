@@ -4,18 +4,20 @@ codeunit 91302 "Payables Mgt"
     var
         VendRemainAmt: Query "Vend. Remain. Amt.";
     begin
-        VendRemainAmt.SetRange(
+        VendRemainAmt.SetFilter(
             Document_Type,
+            '%1',
             "Gen. Journal Document Type"::Invoice);
 
-        VendRemainAmt.SetRange(
+        VendRemainAmt.SetFilter(
             IsOpen,
+            '%1',
             true);
 
         VendRemainAmt.Open();
 
         if VendRemainAmt.Read() then
-            exit(VendRemainAmt.Remaining_Amt_LCY);
+            exit(Abs(VendRemainAmt.Remaining_Amt_LCY));
 
         exit(0);
     end;
@@ -25,12 +27,14 @@ codeunit 91302 "Payables Mgt"
     var
         VendRemainAmt: Query "Vend. Remain. Amt.";
     begin
-        VendRemainAmt.SetRange(
+        VendRemainAmt.SetFilter(
             Document_Type,
+            '%1',
             "Gen. Journal Document Type"::Invoice);
 
-        VendRemainAmt.SetRange(
+        VendRemainAmt.SetFilter(
             IsOpen,
+            '%1',
             true);
 
         VendRemainAmt.SetFilter(
@@ -41,7 +45,7 @@ codeunit 91302 "Payables Mgt"
         VendRemainAmt.Open();
 
         if VendRemainAmt.Read() then
-            exit(VendRemainAmt.Remaining_Amt_LCY);
+            exit(Abs(VendRemainAmt.Remaining_Amt_LCY));
 
         exit(0);
     end;
@@ -51,12 +55,14 @@ codeunit 91302 "Payables Mgt"
     var
         VendRemainAmt: Query "Vend. Remain. Amt.";
     begin
-        VendRemainAmt.SetRange(
+        VendRemainAmt.SetFilter(
             Document_Type,
+            '%1',
             "Gen. Journal Document Type"::Invoice);
 
-        VendRemainAmt.SetRange(
+        VendRemainAmt.SetFilter(
             IsOpen,
+            '%1',
             true);
 
         VendRemainAmt.SetFilter(
@@ -68,43 +74,39 @@ codeunit 91302 "Payables Mgt"
         VendRemainAmt.Open();
 
         if VendRemainAmt.Read() then
-            exit(VendRemainAmt.Remaining_Amt_LCY);
+            exit(Abs(VendRemainAmt.Remaining_Amt_LCY));
 
         exit(0);
     end;
 
 
-    // procedure CalcPaymentsMade(): Decimal
-    // var
-    //     VendPayments: Query "Vend. Payments Amt.";
-    //     MonthStart: Date;
-    //     MonthEnd: Date;
-    // begin
-    //     MonthStart := CalcDate('<-CM>', WorkDate());
-    //     MonthEnd := CalcDate('<CM>', WorkDate());
+    procedure CalcPaymentsMade(): Decimal
+    var
+        VendPayments: Query "Vend. Payments Amt.";
+        MonthStart: Date;
+        MonthEnd: Date;
+    begin
+        MonthStart := CalcDate('<-CM>', WorkDate());
+        MonthEnd := CalcDate('<CM>', WorkDate());
 
-    //     Message(
-    //     'WorkDate: %1\MonthStart: %2\MonthEnd: %3',
-    //     WorkDate(),
-    //     MonthStart,
-    //     MonthEnd);
+        VendPayments.SetFilter(
+            Document_Type,
+            '%1',
+            "Gen. Journal Document Type"::Payment);
 
-    //     VendPayments.SetRange(
-    //         Document_Type,
-    //         "Gen. Journal Document Type"::Payment);
+        VendPayments.SetFilter(
+            Posting_Date,
+            '%1..|%2',
+            MonthStart,
+            MonthEnd);
 
-    //     VendPayments.SetRange(
-    //         Posting_Date,
-    //         MonthStart,
-    //         MonthEnd);
+        VendPayments.Open();
 
-    //     VendPayments.Open();
+        if VendPayments.Read() then
+            exit(VendPayments.Debit_Amount_LCY);
 
-    //     if VendPayments.Read() then
-    //         exit(VendPayments.Debit_Amount_LCY);
-
-    //     exit(0);
-    // end;
+        exit(0);
+    end;
 
 
     procedure IsCachedCueDataExpired(

@@ -4,12 +4,14 @@ codeunit 91300 "Receivables Mgt"
     var
         CustRemainAmt: Query "Cust. Remain. Amt.";
     begin
-        CustRemainAmt.SetRange(
+        CustRemainAmt.SetFilter(
             Document_Type,
+            '%1',
             "Gen. Journal Document Type"::Invoice);
 
-        CustRemainAmt.SetRange(
+        CustRemainAmt.SetFilter(
             IsOpen,
+            '%1',
             true);
 
         CustRemainAmt.Open();
@@ -25,12 +27,14 @@ codeunit 91300 "Receivables Mgt"
     var
         CustRemainAmt: Query "Cust. Remain. Amt.";
     begin
-        CustRemainAmt.SetRange(
+        CustRemainAmt.SetFilter(
             Document_Type,
+            '%1',
             "Gen. Journal Document Type"::Invoice);
 
-        CustRemainAmt.SetRange(
+        CustRemainAmt.SetFilter(
             IsOpen,
+            '%1',
             true);
 
         CustRemainAmt.SetFilter(
@@ -51,12 +55,14 @@ codeunit 91300 "Receivables Mgt"
     var
         CustRemainAmt: Query "Cust. Remain. Amt.";
     begin
-        CustRemainAmt.SetRange(
+        CustRemainAmt.SetFilter(
             Document_Type,
+            '%1',
             "Gen. Journal Document Type"::Invoice);
 
-        CustRemainAmt.SetRange(
+        CustRemainAmt.SetFilter(
             IsOpen,
+            '%1',
             true);
 
         CustRemainAmt.SetFilter(
@@ -83,12 +89,14 @@ codeunit 91300 "Receivables Mgt"
         MonthStart := CalcDate('<-CM>', WorkDate());
         MonthEnd := CalcDate('<CM>', WorkDate());
 
-        CustPayments.SetRange(
+        CustPayments.SetFilter(
             Document_Type,
+            '%1',
             "Gen. Journal Document Type"::Payment);
 
-        CustPayments.SetRange(
+        CustPayments.SetFilter(
             Posting_Date,
+            '%1..|%2',
             MonthStart,
             MonthEnd);
 

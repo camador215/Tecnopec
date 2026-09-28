@@ -434,16 +434,16 @@ page 91301 "Payables Cue"
 
     local procedure CalculateCachedCueFieldValues()
     begin
-        CachedCueValuesCalculationStartDateTime :=
-            CurrentDateTime();
+        // CachedCueValuesCalculationStartDateTime :=
+        //     CurrentDateTime();
 
-        if not PayablesMgt.IsCachedCueDataExpired(
-            Rec,
-            CachedCueValuesCalculationStartDateTime)
-        then begin
-            Clear(CachedCueValuesCalculationStartDateTime);
-            exit;
-        end;
+        // if not PayablesMgt.IsCachedCueDataExpired(
+        //     Rec,
+        //     CachedCueValuesCalculationStartDateTime)
+        // then begin
+        //     Clear(CachedCueValuesCalculationStartDateTime);
+        //     exit;
+        // end;
 
         SchedulePBT(
             Rec.FieldName("Total Outstanding"),
