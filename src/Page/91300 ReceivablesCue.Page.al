@@ -166,11 +166,11 @@ page 91300 "Receivables Cue"
 
         ChartMgt.Initialize();
         ChartMgt.SetXDimension('Estado', Enum::"Business Chart Data Type"::String);
-        ChartMgt.AddMeasure('Importe', 0, Enum::"Business Chart Data Type"::Decimal, Enum::"Business Chart Type"::Pie);
+        ChartMgt.AddMeasure('Importe (USD): ', 0, Enum::"Business Chart Data Type"::Decimal, Enum::"Business Chart Type"::Pie);
         ChartMgt.AddDataRowWithXDimension(StrSubstNo('Facturas de Ventas Vencidas (%1%)', Format(GetPercentage(OverdueAmount, TotalOutstanding))));
-        ChartMgt.SetValue('Importe', 0, OverdueAmount);
+        ChartMgt.SetValue('Importe (USD): ', 0, OverdueAmount);
         ChartMgt.AddDataRowWithXDimension(StrSubstNo('Facturas de Ventas No Vencidas (%1%)', Format(GetPercentage(NotDueAmount, TotalOutstanding))));
-        ChartMgt.SetValue('Importe', 1, NotDueAmount);
+        ChartMgt.SetValue('Importe (USD): ', 1, NotDueAmount);
         ChartMgt.Update(CurrPage.BusinessChart);
     end;
 
@@ -186,17 +186,24 @@ page 91300 "Receivables Cue"
         CustLedgerEntry: Record "Cust. Ledger Entry";
     begin
         SetDateFilters();
-        CustLedgerEntry.SetRange(Open, true);
         case FilterType of
             0:
-                CustLedgerEntry.SetRange("Document Type", Enum::"Gen. Journal Document Type"::Invoice);
+                begin
+                    CustLedgerEntry.SetRange(Open, true);
+                    CustLedgerEntry.SetFilter("Remaining Amt. (LCY)", '>0');
+                    CustLedgerEntry.SetRange("Document Type", Enum::"Gen. Journal Document Type"::Invoice);
+                end;
             1:
                 begin
+                    CustLedgerEntry.SetRange(Open, true);
+                    CustLedgerEntry.SetFilter("Remaining Amt. (LCY)", '>0');
                     CustLedgerEntry.SetRange("Document Type", Enum::"Gen. Journal Document Type"::Invoice);
                     CustLedgerEntry.SetRange("Due Date", 0D, Rec."Work Date Filter");
                 end;
             2:
                 begin
+                    CustLedgerEntry.SetRange(Open, true);
+                    CustLedgerEntry.SetFilter("Remaining Amt. (LCY)", '>0');
                     CustLedgerEntry.SetRange("Document Type", Enum::"Gen. Journal Document Type"::Invoice);
                     CustLedgerEntry.SetFilter("Due Date", '%1..|%2', Rec."Work Date Filter", 0D);
                 end;
@@ -206,7 +213,6 @@ page 91300 "Receivables Cue"
                     CustLedgerEntry.SetRange("Posting Date", Rec."Month Start Filter", Rec."Month End Filter");
                 end;
         end;
-        CustLedgerEntry.SetFilter("Remaining Amt. (LCY)", '>0');
         Page.Run(Page::"Customer Ledger Entries", CustLedgerEntry);
     end;
 

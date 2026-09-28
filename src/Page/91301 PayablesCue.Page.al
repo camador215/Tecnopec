@@ -205,7 +205,7 @@ page 91301 "Payables Cue"
             Enum::"Business Chart Data Type"::String);
 
         ChartMgt.AddMeasure(
-            'Importe',
+            'Importe (USD): ',
             0,
             Enum::"Business Chart Data Type"::Decimal,
             Enum::"Business Chart Type"::Pie);
@@ -219,7 +219,7 @@ page 91301 "Payables Cue"
                         TotalOutstanding))));
 
         ChartMgt.SetValue(
-            'Importe',
+            'Importe (USD): ',
             0,
             OverdueAmount);
 
@@ -232,7 +232,7 @@ page 91301 "Payables Cue"
                         TotalOutstanding))));
 
         ChartMgt.SetValue(
-            'Importe',
+            'Importe (USD): ',
             1,
             NotDueAmount);
 
@@ -259,59 +259,34 @@ page 91301 "Payables Cue"
         VendorLedgerEntry: Record "Vendor Ledger Entry";
     begin
         SetDateFilters();
-
-        VendorLedgerEntry.SetRange(
-            Open,
-            true);
-
         case FilterType of
-
             0:
-                VendorLedgerEntry.SetRange(
-                    "Document Type",
-                    Enum::"Gen. Journal Document Type"::Invoice);
+                begin
+                    VendorLedgerEntry.SetRange(Open, true);
+                    VendorLedgerEntry.SetFilter("Remaining Amt. (LCY)", '<0');
+                    VendorLedgerEntry.SetRange("Document Type", Enum::"Gen. Journal Document Type"::Invoice);
+                end;
 
             1:
                 begin
-                    VendorLedgerEntry.SetRange(
-                        "Document Type",
-                        Enum::"Gen. Journal Document Type"::Invoice);
-
-                    VendorLedgerEntry.SetRange(
-                        "Due Date",
-                        0D,
-                        Rec."Work Date Filter");
+                    VendorLedgerEntry.SetRange(Open, true);
+                    VendorLedgerEntry.SetFilter("Remaining Amt. (LCY)", '<0');
+                    VendorLedgerEntry.SetRange("Document Type", Enum::"Gen. Journal Document Type"::Invoice);
+                    VendorLedgerEntry.SetRange("Due Date", 0D, Rec."Work Date Filter");
                 end;
-
             2:
                 begin
-                    VendorLedgerEntry.SetRange(
-                        "Document Type",
-                        Enum::"Gen. Journal Document Type"::Invoice);
-
-                    VendorLedgerEntry.SetFilter(
-                        "Due Date",
-                        '%1..|%2',
-                        Rec."Work Date Filter",
-                        0D);
+                    VendorLedgerEntry.SetRange(Open, true);
+                    VendorLedgerEntry.SetFilter("Remaining Amt. (LCY)", '<0');
+                    VendorLedgerEntry.SetRange("Document Type", Enum::"Gen. Journal Document Type"::Invoice);
+                    VendorLedgerEntry.SetFilter("Due Date", '%1..|%2', Rec."Work Date Filter", 0D);
                 end;
-
             3:
                 begin
-                    VendorLedgerEntry.SetRange(
-                        "Document Type",
-                        Enum::"Gen. Journal Document Type"::Payment);
-
-                    VendorLedgerEntry.SetRange(
-                        "Posting Date",
-                        Rec."Month Start Filter",
-                        Rec."Month End Filter");
+                    VendorLedgerEntry.SetRange("Document Type", Enum::"Gen. Journal Document Type"::Payment);
+                    VendorLedgerEntry.SetRange("Posting Date", Rec."Month Start Filter", Rec."Month End Filter");
                 end;
         end;
-
-        VendorLedgerEntry.SetFilter(
-            "Remaining Amt. (LCY)",
-            '<0');
 
         Page.Run(
             Page::"Vendor Ledger Entries",
