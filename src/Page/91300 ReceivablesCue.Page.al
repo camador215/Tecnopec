@@ -1,6 +1,6 @@
 page 91300 "Receivables Cue"
 {
-    Caption = 'Cuentas por cobrar';
+    Caption = 'Facturas de Ventas Pendientes de Cobro';
     PageType = CardPart;
     SourceTable = "Receivables Cue";
     ApplicationArea = All;
@@ -10,94 +10,111 @@ page 91300 "Receivables Cue"
     {
         area(content)
         {
-            cuegroup(Amounts)
+            group(Cues)
             {
-                Caption = 'Importes';
-                CuegroupLayout = Wide;
+                showcaption = false;
+                cuegroup(AmountsPartA)
+                {
+                    CuegroupLayout = Wide;
 
-                field(TotalOutstanding; Rec."Total Outstanding")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Saldo total pendiente';
-                    DrillDown = true;
-                    trigger OnDrillDown()
-                    begin
-                        OpenCustomerEntries(0);
-                    end;
+                    field(TotalOutstanding; Rec."Total Outstanding")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Saldo total pendiente';
+                        DrillDown = true;
+                        trigger OnDrillDown()
+                        begin
+                            OpenCustomerEntries(0);
+                        end;
+                    }
+                    field(OverdueAmount; Rec."Overdue Amount")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Monto vencido';
+                        DrillDown = true;
+                        trigger OnDrillDown()
+                        begin
+                            OpenCustomerEntries(1);
+                        end;
+                    }
                 }
-                field(OverdueAmount; Rec."Overdue Amount")
+                cuegroup(AmountsPartB)
                 {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Monto vencido';
-                    DrillDown = true;
-                    trigger OnDrillDown()
-                    begin
-                        OpenCustomerEntries(1);
-                    end;
+                    CuegroupLayout = Wide;
+                    field(NotDueAmount; Rec."Not Due Amount")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Monto no vencido';
+                        DrillDown = true;
+                        trigger OnDrillDown()
+                        begin
+                            OpenCustomerEntries(2);
+                        end;
+                    }
+                    field(PaymentsReceived; Rec."Payments Received")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Pagos recibidos';
+                        DrillDown = true;
+                        trigger OnDrillDown()
+                        begin
+                            OpenCustomerEntries(3);
+                        end;
+                    }
                 }
-                field(NotDueAmount; Rec."Not Due Amount")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Monto no vencido';
-                    DrillDown = true;
-                    trigger OnDrillDown()
-                    begin
-                        OpenCustomerEntries(2);
-                    end;
-                }
-                field(PaymentsReceived; Rec."Payments Received")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Pagos recibidos';
-                    DrillDown = true;
-                    trigger OnDrillDown()
-                    begin
-                        OpenCustomerEntries(3);
-                    end;
-                }
-            }
-            cuegroup(Counts)
-            {
-                Caption = 'Cantidad de Facturas de Venta';
 
-                field(OutstandingInvoiceCount; Rec."Outstanding Invoice Count")
+                cuegroup(Counts)
                 {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Facturas pendientes';
-                    DrillDown = true;
-                    trigger OnDrillDown()
-                    begin
-                        OpenCustomerEntries(0);
-                    end;
+                    showcaption = false;
+                    field(OutstandingInvoiceCount; Rec."Outstanding Invoice Count")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Facturas Ventas pendientes';
+                        DrillDown = true;
+                        trigger OnDrillDown()
+                        begin
+                            OpenCustomerEntries(0);
+                        end;
+                    }
+                    field(OverdueInvoiceCount; Rec."Overdue Invoice Count")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Facturas Ventas vencidas';
+                        DrillDown = true;
+                        trigger OnDrillDown()
+                        begin
+                            OpenCustomerEntries(1);
+                        end;
+                    }
+                    field(NotDueInvoiceCount; Rec."Not Due Invoice Count")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Facturas Ventas no vencidas';
+                        DrillDown = true;
+                        trigger OnDrillDown()
+                        begin
+                            OpenCustomerEntries(2);
+                        end;
+                    }
                 }
-                field(OverdueInvoiceCount; Rec."Overdue Invoice Count")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Facturas vencidas';
-                    DrillDown = true;
-                    trigger OnDrillDown()
-                    begin
-                        OpenCustomerEntries(1);
-                    end;
-                }
-                field(NotDueInvoiceCount; Rec."Not Due Invoice Count")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Facturas no vencidas';
-                    DrillDown = true;
-                    trigger OnDrillDown()
-                    begin
-                        OpenCustomerEntries(2);
-                    end;
-                }
+
             }
-            usercontrol(BusinessChart; BusinessChart)
+            group(Chart)
             {
-                ApplicationArea = Basic, Suite;
-                trigger AddInReady()
-                begin
-                    UpdateChart();
-                end;
+                showcaption = false;
+                cuegroup(PieChart)
+                {
+                    Caption = 'Gráfico de cuentas por cobrar';
+                    CuegroupLayout = Wide;
+                    usercontrol(BusinessChart; BusinessChart)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        trigger AddInReady()
+                        begin
+                            UpdateChart();
+                        end;
+                    }
+                }
             }
         }
     }
@@ -150,9 +167,9 @@ page 91300 "Receivables Cue"
         ChartMgt.Initialize();
         ChartMgt.SetXDimension('Estado', Enum::"Business Chart Data Type"::String);
         ChartMgt.AddMeasure('Importe', 0, Enum::"Business Chart Data Type"::Decimal, Enum::"Business Chart Type"::Pie);
-        ChartMgt.AddDataRowWithXDimension(StrSubstNo('Vencido (%1%)', Format(GetPercentage(OverdueAmount, TotalOutstanding))));
+        ChartMgt.AddDataRowWithXDimension(StrSubstNo('Facturas de Ventas Vencidas (%1%)', Format(GetPercentage(OverdueAmount, TotalOutstanding))));
         ChartMgt.SetValue('Importe', 0, OverdueAmount);
-        ChartMgt.AddDataRowWithXDimension(StrSubstNo('No vencido (%1%)', Format(GetPercentage(NotDueAmount, TotalOutstanding))));
+        ChartMgt.AddDataRowWithXDimension(StrSubstNo('Facturas de Ventas No Vencidas (%1%)', Format(GetPercentage(NotDueAmount, TotalOutstanding))));
         ChartMgt.SetValue('Importe', 1, NotDueAmount);
         ChartMgt.Update(CurrPage.BusinessChart);
     end;

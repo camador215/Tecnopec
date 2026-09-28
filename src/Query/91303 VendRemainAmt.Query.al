@@ -1,20 +1,21 @@
 query 91302 "Vend. Remain. Amt."
 {
-    QueryType = Normal;
+    Caption = 'Vend. Ledg. Entry Remain. Amt.';
+    DataAccessIntent = ReadOnly;
 
     elements
     {
-        dataitem(VendorLedgerEntry; "Vendor Ledger Entry")
+        dataitem(VendLedgerEntry; "Vendor Ledger Entry")
         {
-            column(Document_Type; "Document Type")
+            filter(Document_Type; "Document Type")
             {
             }
 
-            column(IsOpen; Open)
+            filter(IsOpen; Open)
             {
             }
 
-            column(Due_Date; "Due Date")
+            filter(Due_Date; "Due Date")
             {
             }
 

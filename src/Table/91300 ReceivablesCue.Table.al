@@ -43,28 +43,24 @@ table 91300 "Receivables Cue"
         {
             Caption = 'Saldo total pendiente';
             AutoFormatExpression = GetAmountFormat();
-            DecimalPlaces = 0 : 0;
             AutoFormatType = 11;
         }
         field(21; "Overdue Amount"; Decimal)
         {
             Caption = 'Monto vencido';
             AutoFormatExpression = GetAmountFormat();
-            DecimalPlaces = 0 : 0;
             AutoFormatType = 11;
         }
         field(22; "Not Due Amount"; Decimal)
         {
             Caption = 'Monto no vencido';
             AutoFormatExpression = GetAmountFormat();
-            DecimalPlaces = 0 : 0;
             AutoFormatType = 11;
         }
         field(23; "Payments Received"; Decimal)
         {
             Caption = 'Pagos recibidos';
             AutoFormatExpression = GetAmountFormat();
-            DecimalPlaces = 0 : 0;
             AutoFormatType = 11;
         }
         field(30; "Outstanding Invoice Count"; Integer)

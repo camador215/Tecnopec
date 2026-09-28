@@ -1,16 +1,17 @@
 query 91303 "Vend. Payments Amt."
 {
+    Caption = 'Vend. Payments Amt.';
     QueryType = Normal;
 
     elements
     {
-        dataitem(VendorLedgerEntry; "Vendor Ledger Entry")
+        dataitem(VendLedgerEntry; "Vendor Ledger Entry")
         {
-            column(Document_Type; "Document Type")
+            filter(Document_Type; "Document Type")
             {
             }
 
-            column(Posting_Date; "Posting Date")
+            filter(Posting_Date; "Posting Date")
             {
             }
 
